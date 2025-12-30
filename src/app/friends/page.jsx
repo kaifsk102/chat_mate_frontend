@@ -1,3 +1,4 @@
+"use client";
 import { apiRequest } from "@/services/api";
 
 const addFriend = async () => {
@@ -35,3 +36,11 @@ const acceptRequest = async (requestId) => {
     alert(err.message);
   }
 };
+
+export default function FriendsPage() {
+  return (
+    <div>
+      Friends Page
+    </div>
+  );
+}
