@@ -17,21 +17,27 @@ export default function ChatPage() {
   const [isTyping, setIsTyping] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [receiverName, setReceiverName] = useState("");
+  
 
 
+ // Load user & token instantly (no delay)
+const getStoredUser = () => {
+  if (typeof window === "undefined") return null;
+  try {
+    return JSON.parse(localStorage.getItem("user") || "{}");
+  } catch {
+    return null;
+  }
+};
 
-  const token =
-    typeof window !== "undefined"
-      ? localStorage.getItem("token")
-      : null;
+const getStoredToken = () => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("token");
+};
 
-
-  const user =
-  typeof window !== "undefined"
-    ? JSON.parse(localStorage.getItem("user"))
-    : null;
-
-const userId = user?.id;    
+const [user] = useState(getStoredUser);
+const [token] = useState(getStoredToken);
+const userId = user?.id;  
 
 // Socket connection
  useEffect(() => {
