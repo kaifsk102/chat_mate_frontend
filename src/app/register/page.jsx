@@ -6,6 +6,8 @@ import { apiRequest } from "@/services/api";
 
 
 export default function RegisterPage() {
+  const router = useRouter();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [countryCode, setCountryCode] = useState("+91");
@@ -17,17 +19,18 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
 
   //  SEND OTP
-   const sendOtp = async () => {
-  console.log("SEND OTP BUTTON CLICKED");
-  console.log("EMAIL", email);
+ const sendOtp = async () => {
+  setError("");
+  if (!email) return setError("Email is required");
 
   try {
-await apiRequest("/auth/sendotp", "POST", { email });
+    await apiRequest("/auth/sendotp", "POST", { email });
+    alert("OTP sent to your email!");
   } catch (err) {
-    console.error("FRONTEND ERROR:", err);
     setError(err.message);
   }
 };
+
 
   //  SIGNUP
   const handleSignup = async () => {
@@ -49,7 +52,7 @@ await apiRequest("/auth/sendotp", "POST", { email });
       });
 
       alert("Account created successfully");
-      window.location.href = "/chat";
+      router.push("/chat");
     } catch (err) {
       setError(err.message);
     } finally {
