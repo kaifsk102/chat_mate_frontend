@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:3001/api";
+const API_BASE_URL = "https://chat-mate-backend-gv2e.onrender.com/";
 
 export const apiRequest = async (url, method, body = null, token = null) => {
   const headers = {
