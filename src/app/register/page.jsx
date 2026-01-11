@@ -17,32 +17,42 @@ export default function RegisterPage() {
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [otpSendDisabled, setOtpSendDisabled] = useState(false);
+
 
   //  SEND OTP
  const sendOtp = async () => {
   setError("");
   if (!email) return setError("Email is required");
 
+  setOtpSendDisabled(true);
+
   try {
-    await apiRequest("/auth/sendotp", "POST", { email });
+    await apiRequest("/api/auth/sendotp", "POST", { email });
     alert("OTP sent to your email!");
+
+    setTimeout(() => setOtpSendDisabled(false), 30000); // 30 sec cooldown
   } catch (err) {
+    setOtpSendDisabled(false);
     setError(err.message);
   }
 };
 
 
+
   //  SIGNUP
   const handleSignup = async () => {
     setError("");
-
+    if (!name || !email || !phone || !password || !confirmPassword || !otp) {
+      return setError("All fields are required");
+    }
     if (password !== confirmPassword) {
       return setError("Passwords do not match");
     }
 
     setLoading(true);
     try {
-      await apiRequest("/auth/signup", "POST", {
+      await apiRequest("/api/auth/signup", "POST", {
         name,
         email,
         phone_number: `${countryCode}${phone}`,
@@ -51,8 +61,12 @@ export default function RegisterPage() {
         otp,
       });
 
-      alert("Account created successfully");
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      alert("Account created successfully! Redirecting...");
       router.push("/chat");
+
     } catch (err) {
       setError(err.message);
     } finally {
@@ -154,12 +168,15 @@ export default function RegisterPage() {
               onChange={(e) => setOtp(e.target.value)}
               className="flex-1 bg-transparent border border-white/20 rounded-lg px-4 py-2 outline-none focus:border-purple-500"
             />
+            
             <button
               onClick={sendOtp}
-              className="px-4 rounded-lg bg-white/10 hover:bg-white/20 transition"
+              disabled={otpSendDisabled}
+              className="px-4 rounded-lg bg-white/10 hover:bg-white/20 transition disabled:opacity-50"
             >
-              Send OTP
+              {otpSendDisabled ? "Wait..." : "Send OTP"}
             </button>
+
           </div>
 
           <button

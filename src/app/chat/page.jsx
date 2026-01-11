@@ -92,7 +92,7 @@ const sendMessage = () => {
   useEffect(() => {
   if (!token) return;
 
-  apiRequest("/friends/requests", "GET", null, token)
+  apiRequest("/api/friends/requests", "GET", null, token)
     .then((data) => {
       setRequests(Array.isArray(data) ? data : []);
     })
@@ -107,7 +107,7 @@ const sendMessage = () => {
 useEffect(() => {
   if (!token) return;
 
-  apiRequest("/users/friends", "GET", null, token)
+  apiRequest("/api/users/friends", "GET", null, token)
     .then((data) => {
       setUsers(Array.isArray(data) ? data : []);
     })

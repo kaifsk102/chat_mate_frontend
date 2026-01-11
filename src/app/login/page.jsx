@@ -19,14 +19,19 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      const res = await apiRequest("/auth/login", "POST", {
+      console.log("LOGIN REQUEST:", { email, password });
+      const res = await apiRequest("/api/auth/login", "POST", {
         email,
         password,
       });
+      console.log("LOGIN RESPONSE:", res);
 
       // Save JWT + user
       localStorage.setItem("token", res.token);
       localStorage.setItem("user", JSON.stringify(res.user));
+
+      console.log("TOKEN SAVED:", localStorage.getItem("token"));
+      console.log("USER SAVED:", localStorage.getItem("user"));
 
       // Redirect to chat/dashboard
       window.location.href = "/chat";

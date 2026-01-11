@@ -2,12 +2,8 @@
 
 import { io } from "socket.io-client";
 
-let socket;
-
 export const connectSocket = (token) => {
-  socket = io("https://chat-mate-backend-gv2e.onrender.com", {
-    auth: { token },
-    transports: ["websocket"],
+  return io(process.env.NEXT_PUBLIC_API_BASE_URL, {
+    auth: { token }
   });
-  return socket;
 };
