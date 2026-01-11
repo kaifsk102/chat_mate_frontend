@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { apiRequest } from "@/services/api";
@@ -34,7 +34,7 @@ export default function RegisterPage() {
   setOtpSendDisabled(true);
 
   try {
-    await apiRequest("/api/auth/sendotp", "POST", { email });
+    await apiRequest("/auth/sendotp", "POST", { email });
     alert("OTP sent to your email!");
 
     // 30s cooldown timer
@@ -67,7 +67,7 @@ export default function RegisterPage() {
   setLoading(true);
 
   try {
-    const data = await apiRequest("/api/auth/signup", "POST", {
+    const data = await apiRequest("/auth/signup", "POST", {
       name,
       email,
       phone_number: `${countryCode}${phone}`,
@@ -91,6 +91,12 @@ export default function RegisterPage() {
     setLoading(false);
   }
 };
+
+// 
+useEffect(() => {
+  console.log("ENV API BASE URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
+}, []);
+// 
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-linear-to-br from-[#0f0f14] to-[#1a1b22] text-white overflow-hidden">

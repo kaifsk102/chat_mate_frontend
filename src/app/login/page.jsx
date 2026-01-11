@@ -20,7 +20,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       console.log("LOGIN REQUEST:", { email, password });
-      const res = await apiRequest("/api/auth/login", "POST", {
+      const res = await apiRequest("/auth/login", "POST", {
         email,
         password,
       });

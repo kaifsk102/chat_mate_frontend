@@ -2,10 +2,12 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const apiRequest = async (url, method, body = null, token = null) => {
   if (!API_BASE_URL) {
-    throw new Error("API base URL is not configured");
+    throw new Error("API base URL not configured!");
   }
-  const headers = { "Content-Type": "application/json" };
 
+  console.log("REQUEST:", `${API_BASE_URL}${url}`);
+
+  const headers = { "Content-Type": "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
 
   const res = await fetch(`${API_BASE_URL}${url}`, {
@@ -14,7 +16,10 @@ export const apiRequest = async (url, method, body = null, token = null) => {
     body: body ? JSON.stringify(body) : null,
   });
 
-  const data = await res.json().catch(() => ({}));
+  let data = {};
+  try {
+    data = await res.json();
+  } catch (e) {}
 
   if (!res.ok) {
     throw new Error(data.error || "Request failed");
