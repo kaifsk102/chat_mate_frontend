@@ -1,6 +1,9 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const apiRequest = async (url, method, body = null, token = null) => {
+  if (!API_BASE_URL) {
+    throw new Error("API base URL is not configured");
+  }
   const headers = { "Content-Type": "application/json" };
 
   if (token) headers.Authorization = `Bearer ${token}`;

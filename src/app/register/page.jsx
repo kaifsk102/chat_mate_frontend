@@ -17,24 +17,37 @@ export default function RegisterPage() {
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
   const [otpSendDisabled, setOtpSendDisabled] = useState(false);
+
+  
+
 
 
   //  SEND OTP
  const sendOtp = async () => {
   setError("");
+
   if (!email) return setError("Email is required");
 
+  setSending(true);
   setOtpSendDisabled(true);
 
   try {
     await apiRequest("/api/auth/sendotp", "POST", { email });
     alert("OTP sent to your email!");
 
-    setTimeout(() => setOtpSendDisabled(false), 30000); // 30 sec cooldown
+    // 30s cooldown timer
+    setTimeout(() => {
+      setOtpSendDisabled(false);
+      alert("You can request OTP again.");
+    }, 30000);
+
   } catch (err) {
     setOtpSendDisabled(false);
     setError(err.message);
+  } finally {
+    setSending(false);
   }
 };
 
@@ -42,37 +55,42 @@ export default function RegisterPage() {
 
   //  SIGNUP
   const handleSignup = async () => {
-    setError("");
-    if (!name || !email || !phone || !password || !confirmPassword || !otp) {
-      return setError("All fields are required");
-    }
-    if (password !== confirmPassword) {
-      return setError("Passwords do not match");
-    }
+  setError("");
 
-    setLoading(true);
-    try {
-      await apiRequest("/api/auth/signup", "POST", {
-        name,
-        email,
-        phone_number: `${countryCode}${phone}`,
-        password,
-        confirm_password: confirmPassword,
-        otp,
-      });
+  if (!name || !email || !phone || !password || !confirmPassword || !otp) {
+    return setError("All fields are required");
+  }
+  if (password !== confirmPassword) {
+    return setError("Passwords do not match");
+  }
 
+  setLoading(true);
+
+  try {
+    const data = await apiRequest("/api/auth/signup", "POST", {
+      name,
+      email,
+      phone_number: `${countryCode}${phone}`,
+      password,
+      confirm_password: confirmPassword,
+      otp,
+    });
+
+    // Auto login ONLY if backend returned token + user
+    if (data.token && data.user) {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-
-      alert("Account created successfully! Redirecting...");
-      router.push("/chat");
-
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
     }
-  };
+
+    alert("Account created successfully!");
+    router.push("/chat");
+
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-linear-to-br from-[#0f0f14] to-[#1a1b22] text-white overflow-hidden">
@@ -170,11 +188,11 @@ export default function RegisterPage() {
             />
             
             <button
-              onClick={sendOtp}
-              disabled={otpSendDisabled}
-              className="px-4 rounded-lg bg-white/10 hover:bg-white/20 transition disabled:opacity-50"
+            onClick={sendOtp}
+            disabled={sending || otpSendDisabled}
+            className="px-4 rounded-lg bg-white/10 hover:bg-white/20 transition disabled:opacity-50"
             >
-              {otpSendDisabled ? "Wait..." : "Send OTP"}
+            {sending ? "Sending..." : otpSendDisabled ? "Wait..." : "Send OTP"}
             </button>
 
           </div>
